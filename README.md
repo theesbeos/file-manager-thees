@@ -114,6 +114,11 @@ return [
     // Middleware bảo vệ
     'middleware' => ['web', 'auth'],
 
+    // Layout của ứng dụng chủ để nhúng File Manager (vd: 'layouts.admin', 'admin.master', ...)
+    // Nếu để null: hiển thị chế độ độc lập (standalone) toàn màn hình.
+    'layout' => env('FILE_MANAGER_LAYOUT', null),
+    'section' => env('FILE_MANAGER_SECTION', 'content'),
+
     // Disk lưu trữ private (khuyến nghị không symlink ra public)
     'disk' => 'file-manager',
 
@@ -156,6 +161,21 @@ return [
     ],
 ];
 ```
+
+### 🖥️ Nhúng vào Giao Diện Quản Trị (Embedded vs Standalone Mode)
+
+Package hỗ trợ linh hoạt 2 chế độ hiển thị:
+
+1. **Chế độ Nhúng (Embedded - Khuyên dùng cho Admin Dashboard)**:
+   - Khi dự án đã có sẵn giao diện quản trị (Header, Sidebar menu bên trái), bạn chỉ cần cấu hình trong file `.env` hoặc `config/file-manager.php`:
+     ```env
+     FILE_MANAGER_LAYOUT=layouts.admin
+     FILE_MANAGER_SECTION=content
+     ```
+   - File Manager sẽ tự động hiển thị gọn gàng bên trong vùng nội dung `@yield('content')`, hoạt động như một thành phần (component) nội bộ, **giữ nguyên toàn bộ thanh menu (sidebar) và thanh điều hướng (header) của hệ thống cũ**, không bị tràn hay che mất giao diện chung.
+2. **Chế độ Độc lập (Standalone Mode)**:
+   - Để `FILE_MANAGER_LAYOUT=null` hoặc truy cập kèm tham số: `/file-manager?standalone=1`.
+   - File Manager sẽ mở toàn màn hình, tối ưu khi chạy độc lập hoặc mở trong cửa sổ popup chọn file (`picker=1`).
 
 ---
 

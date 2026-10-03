@@ -20,17 +20,37 @@ class FileManagerController extends Controller
     public function page(Request $request)
     {
         $this->access->authorize($request->user(), 'view');
-        return view('file-manager::index', ['settings' => [
-            'base' => url(config('file-manager.prefix')), 'csrf' => csrf_token(),
-            'brand' => config('file-manager.brand'),
-            'user' => ['id' => (string) $request->user()->getAuthIdentifier(), 'name' => $request->user()->name ?? 'Thành viên'],
-            'upload' => ['maxKb' => config('file-manager.upload.max_kb'), 'maxFiles' => config('file-manager.upload.max_files'), 'extensions' => array_keys(config('file-manager.upload.types'))],
-            'quota' => config('file-manager.upload.quota_bytes'),
-            'canUpload' => $this->access->allows($request->user(), 'upload'),
-            'picker' => $request->boolean('picker'), 'multiple' => $request->boolean('multiple'),
-            'channel' => substr((string) $request->query('channel', ''), 0, 100),
-            'pickerType' => in_array($request->query('type'), ['image', 'video', 'document']) ? $request->query('type') : '',
-        ]]);
+
+        $isPicker = $request->boolean('picker');
+        $standalone = $request->boolean('standalone') || $isPicker;
+        $layout = $standalone ? null : config('file-manager.layout');
+        $section = config('file-manager.section', 'content');
+
+        return view('file-manager::index', [
+            'layout' => $layout,
+            'section' => $section,
+            'embedded' => !empty($layout),
+            'settings' => [
+                'base' => url(config('file-manager.prefix')),
+                'csrf' => csrf_token(),
+                'brand' => config('file-manager.brand'),
+                'user' => [
+                    'id' => (string) $request->user()->getAuthIdentifier(),
+                    'name' => $request->user()->name ?? 'Thành viên',
+                ],
+                'upload' => [
+                    'maxKb' => config('file-manager.upload.max_kb'),
+                    'maxFiles' => config('file-manager.upload.max_files'),
+                    'extensions' => array_keys(config('file-manager.upload.types')),
+                ],
+                'quota' => config('file-manager.upload.quota_bytes'),
+                'canUpload' => $this->access->allows($request->user(), 'upload'),
+                'picker' => $isPicker,
+                'multiple' => $request->boolean('multiple'),
+                'channel' => substr((string) $request->query('channel', ''), 0, 100),
+                'pickerType' => in_array($request->query('type'), ['image', 'video', 'document']) ? $request->query('type') : '',
+            ],
+        ]);
     }
 
     private function present(Node $node, Request $request): array

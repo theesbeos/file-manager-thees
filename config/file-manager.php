@@ -3,6 +3,11 @@
 return [
     'prefix' => 'file-manager',
     'middleware' => ['web', 'auth'],
+    // Layout của ứng dụng chủ để nhúng File Manager (ví dụ: 'layouts.admin', 'admin.layouts.master', ...).
+    // Đặt là null nếu muốn chạy độc lập toàn màn hình (standalone).
+    'layout' => env('FILE_MANAGER_LAYOUT', null),
+    // Tên section trong layout để render nội dung File Manager (mặc định: 'content')
+    'section' => env('FILE_MANAGER_SECTION', 'content'),
     // A private disk: never point this at storage/app/public.
     'disk' => 'file-manager',
     'public_shared' => true,

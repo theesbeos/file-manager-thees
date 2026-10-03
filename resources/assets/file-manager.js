@@ -327,7 +327,7 @@
   $('close-modal').onclick = () => $('modal').close();
   $('modal').addEventListener('click',(event) => {if (event.target === $('modal')) {const r = $('modal').getBoundingClientRect();if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) $('modal').close();}});
   $('modal').addEventListener('close',() => {$('modal-body').querySelectorAll('video').forEach((v) => v.pause());});
-  const mobileQuery = matchMedia('(max-width:700px)');
+  const mobileQuery = matchMedia('(max-width:768px)');
   function syncSidebar() {
     $('sidebar').inert = mobileQuery.matches && !$('sidebar').classList.contains('open');
     $('menu-toggle').setAttribute('aria-expanded',String($('sidebar').classList.contains('open')));
