@@ -1,0 +1,22 @@
+{
+    "name": "kbtech/laravel-file-manager",
+    "description": "A Vietnamese media library and secure file picker for Laravel 10 and PHP 8.3.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.3",
+        "ext-fileinfo": "*",
+        "ext-gd": "*",
+        "illuminate/auth": "^10.48",
+        "illuminate/database": "^10.48",
+        "illuminate/filesystem": "^10.48",
+        "illuminate/http": "^10.48",
+        "illuminate/routing": "^10.48",
+        "illuminate/support": "^10.48",
+        "illuminate/validation": "^10.48",
+        "illuminate/view": "^10.48"
+    },
+    "autoload": { "psr-4": { "KBTech\\FileManager\\": "src/" } },
+    "extra": { "laravel": { "providers": ["KBTech\\FileManager\\FileManagerServiceProvider"] } },
+    "config": { "sort-packages": true }
+}
