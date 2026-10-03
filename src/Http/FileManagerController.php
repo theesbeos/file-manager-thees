@@ -61,7 +61,9 @@ class FileManagerController extends Controller
             'mime' => $node->mime, 'extension' => $node->extension, 'size' => $node->size,
             'width' => $node->width, 'height' => $node->height,
             'url' => $node->kind === 'file' && ! $node->trashed() ? $node->url() : null,
-            'thumbnail_url' => $node->thumbnail_path && ! $node->trashed() ? $node->url(true) : null,
+            'thumbnail_url' => ! $node->trashed()
+                ? ($node->thumbnail_path ? $node->url(true) : ($node->isImage() ? $node->url(false) : null))
+                : null,
             'created_at' => $node->created_at->toIso8601String(), 'updated_at' => $node->updated_at->toIso8601String(),
             'deleted_at' => $node->deleted_at?->toIso8601String(),
             'permissions' => $this->access->permissions($request->user(), $node),
@@ -86,7 +88,10 @@ class FileManagerController extends Controller
             $escaped = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $data['q']);
             $query->whereRaw("name LIKE ? ESCAPE '!'", ['%'.$escaped.'%']);
         } elseif (! $trash && ($data['scope'] ?? 'all') !== 'recent') {
-            $query->where('parent_id', $parent?->id);
+            // Khi lọc theo loại tài nguyên ở thư mục gốc, tìm kiếm trên toàn bộ thư viện
+            if (empty($data['type']) || ! empty($data['parent_id'])) {
+                $query->where('parent_id', $parent?->id);
+            }
         }
         if (in_array($data['scope'] ?? '', ['shared', 'private'])) { $query->where('visibility', $data['scope']); }
         if (($data['scope'] ?? '') === 'recent') { $query->where('kind', 'file'); }
@@ -102,18 +107,63 @@ class FileManagerController extends Controller
         $sort = $data['sort'] ?? 'newest';
         $query->orderByRaw("CASE WHEN kind = 'folder' THEN 0 ELSE 1 END");
         $query->orderBy(match ($sort) { 'name' => 'name', 'size' => 'size', default => 'created_at' }, in_array($sort, ['name', 'oldest']) ? 'asc' : 'desc')->orderBy('id');
-        $visible = $query->get()->filter(fn ($node) => $this->access->allows($request->user(), 'view', $node))->values();
-        // Hide children inside trashed folders; restore/purge the folder as a unit.
-        if ($trash) { $visible = $visible->filter(fn ($node) => ! $node->parent?->trashed())->values(); }
-        $page = $data['page'] ?? 1; $perPage = $data['per_page'] ?? 40;
-        $ancestors = []; $current = $parent;
-        while ($current) { array_unshift($ancestors, ['id' => $current->id, 'name' => $current->name]); $current = $current->parent; }
-        $all = Node::withTrashed()->get()->filter(fn ($node) => $this->access->allows($request->user(), 'view', $node));
+
+        // Phân trang trực tiếp trên Database để tối ưu hiệu năng và RAM
+        $total = $query->count();
+        $page = (int) ($data['page'] ?? 1);
+        $perPage = (int) ($data['per_page'] ?? 40);
+
+        // Eager load quan hệ 'parent' để triệt tiêu hoàn toàn truy vấn N+1
+        $items = $query->with('parent')
+            ->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get();
+
+        $ancestors = [];
+        $current = $parent;
+        while ($current) {
+            array_unshift($ancestors, ['id' => $current->id, 'name' => $current->name]);
+            $current = $current->parent;
+        }
+
+        // Thống kê nhanh toàn hệ thống qua 1 câu truy vấn gộp SQL duy nhất
+        $statsData = DB::table('fm_nodes')
+            ->whereNull('deleted_at')
+            ->selectRaw("
+                SUM(CASE WHEN kind = 'file' THEN 1 ELSE 0 END) as files_count,
+                SUM(CASE WHEN kind = 'folder' THEN 1 ELSE 0 END) as folders_count,
+                SUM(size) as total_bytes,
+                SUM(CASE WHEN mime LIKE 'image/%' THEN 1 ELSE 0 END) as count_images,
+                SUM(CASE WHEN mime LIKE 'video/%' THEN 1 ELSE 0 END) as count_videos,
+                SUM(CASE WHEN extension = 'zip' THEN 1 ELSE 0 END) as count_archives,
+                SUM(CASE WHEN mime NOT LIKE 'image/%' AND mime NOT LIKE 'video/%' AND extension != 'zip' AND kind = 'file' THEN 1 ELSE 0 END) as count_documents
+            ")
+            ->first();
+
+        $trashCount = DB::table('fm_nodes')->whereNotNull('deleted_at')->count();
+
         return response()->json([
-            'data' => $visible->slice(($page - 1) * $perPage, $perPage)->map(fn ($node) => $this->present($node, $request))->values(),
-            'meta' => ['total' => $visible->count(), 'page' => $page, 'per_page' => $perPage, 'last_page' => max(1, (int) ceil($visible->count() / $perPage))],
+            'data' => $items->map(fn ($node) => $this->present($node, $request))->values(),
+            'meta' => [
+                'total' => $total,
+                'page' => $page,
+                'per_page' => $perPage,
+                'last_page' => max(1, (int) ceil($total / $perPage)),
+            ],
             'breadcrumbs' => $ancestors,
-            'stats' => ['bytes' => $all->sum('size'), 'files' => $all->where('kind', 'file')->whereNull('deleted_at')->count(), 'folders' => $all->where('kind', 'folder')->whereNull('deleted_at')->count(), 'trash' => $all->whereNotNull('deleted_at')->count()],
+            'stats' => [
+                'bytes' => (int) ($statsData->total_bytes ?? 0),
+                'files' => (int) ($statsData->files_count ?? 0),
+                'folders' => (int) ($statsData->folders_count ?? 0),
+                'trash' => $trashCount,
+            ],
+            'counts' => [
+                'all' => (int) ($statsData->files_count ?? 0) + (int) ($statsData->folders_count ?? 0),
+                'image' => (int) ($statsData->count_images ?? 0),
+                'document' => (int) ($statsData->count_documents ?? 0),
+                'video' => (int) ($statsData->count_videos ?? 0),
+                'archive' => (int) ($statsData->count_archives ?? 0),
+            ],
             'can_upload' => ! $trash && $this->access->allows($request->user(), 'upload', $parent),
         ]);
     }
@@ -258,11 +308,11 @@ class FileManagerController extends Controller
         $this->library->assertActive($node);
         abort_unless($node->kind === 'file', 404);
         $thumb = $request->boolean('thumbnail');
-        $path = $thumb ? $node->thumbnail_path : $node->path;
+        $path = $thumb ? ($node->thumbnail_path ?: $node->path) : $node->path;
         abort_unless($path && Storage::disk($node->disk)->exists($path), 404);
         $inline = ! $request->boolean('download') && ($node->isImage() || str_starts_with($node->mime, 'video/'));
         return Storage::disk($node->disk)->response($path, $thumb ? 'thumbnail.webp' : $node->name, [
-            'Content-Type' => $thumb ? 'image/webp' : $node->mime,
+            'Content-Type' => ($thumb && $node->thumbnail_path) ? 'image/webp' : $node->mime,
             'X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'private, no-store',
             'Content-Security-Policy' => "default-src 'none'; sandbox",
         ], $inline ? 'inline' : 'attachment');

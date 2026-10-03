@@ -63,7 +63,11 @@
   async function load(refreshTree = false) {
     const id = ++requestId; activeRequest?.abort(); activeRequest = new AbortController();
     state.loading = true; $('content').setAttribute('aria-busy', 'true');
-    $('content').innerHTML = Array.from({length:8}, () => '<div class="skeleton"></div>').join('');
+    if (!state.items.length) {
+      $('content').innerHTML = Array.from({length:8}, () => '<div class="skeleton"></div>').join('');
+    } else {
+      $('content').classList.add('is-loading');
+    }
     const query = new URLSearchParams({scope:state.scope,sort:state.sort,page:state.page,per_page:40});
     if (state.parent) query.set('parent_id',state.parent);
     if (state.type) query.set('type',state.type);
@@ -78,7 +82,7 @@
       if (error.name === 'AbortError' || id !== requestId) return;
       $('content').innerHTML = `<div class="empty-state">${icon('folder')}<h3>Chưa thể tải thư viện</h3><p>${esc(error.message)}</p><button class="button secondary" id="retry-load">Thử lại</button></div>`;
       $('retry-load').onclick = () => load(); $('result-summary').textContent = 'Không thể tải dữ liệu';
-    } finally { if (id === requestId) { state.loading = false; $('content').setAttribute('aria-busy','false'); } }
+    } finally { if (id === requestId) { state.loading = false; $('content').setAttribute('aria-busy','false'); $('content').classList.remove('is-loading'); } }
   }
   async function loadTree() {
     try { state.tree = (await api('tree')).data; renderTree(); } catch (error) { toast(error.message,true); }
@@ -102,6 +106,14 @@
     $('storage-limit').textContent = config.quota ? ` / ${bytes(config.quota)}` : ' / Không giới hạn';
     $('storage-bar').style.width = `${config.quota ? Math.min(100, result.stats.bytes / config.quota * 100) : 0}%`;
     $('total-count').textContent = result.meta.total;
+    if (result.counts) {
+      const allCount = (!state.parent && !state.type) ? result.meta.total : result.counts.all;
+      if ($('count-all')) $('count-all').textContent = allCount.toLocaleString('vi-VN');
+      if ($('count-image')) $('count-image').textContent = result.counts.image.toLocaleString('vi-VN');
+      if ($('count-document')) $('count-document').textContent = result.counts.document.toLocaleString('vi-VN');
+      if ($('count-video')) $('count-video').textContent = result.counts.video.toLocaleString('vi-VN');
+      if ($('count-archive')) $('count-archive').textContent = result.counts.archive.toLocaleString('vi-VN');
+    }
     $('upload-button').disabled = !state.canUpload;
     $('new-folder').disabled = !state.canUpload;
     $('sidebar-new-folder').disabled = !state.canUpload;
@@ -109,10 +121,13 @@
     $('breadcrumbs').innerHTML = `<button data-crumb="">${esc(titles[state.scope])}</button>` + result.breadcrumbs.map((x) => `${icon('chevron')}<button data-crumb="${x.id}">${esc(x.name)}</button>`).join('') + (state.q ? `${icon('chevron')}<span>Kết quả tìm kiếm</span>` : '');
     $('breadcrumbs').querySelectorAll('[data-crumb]').forEach((el) => el.onclick = () => nav(state.scope, Number(el.dataset.crumb) || null));
     document.querySelectorAll('[data-type]').forEach((el) => { const active = el.dataset.type === state.type; el.classList.toggle('active',active); el.setAttribute('aria-selected',String(active)); });
-    renderTree();
+    $('folder-tree')?.querySelectorAll('.tree-item').forEach((el) => {
+      el.classList.toggle('active', state.parent === Number(el.dataset.folder));
+    });
   }
   function renderItems(result) {
     const content = $('content'); content.classList.toggle('list-mode',state.view === 'list');
+    content.classList.remove('is-loading');
     $('list-heading').hidden = state.view !== 'list';
     $('grid-view').classList.toggle('active',state.view !== 'list'); $('grid-view').setAttribute('aria-pressed',String(state.view !== 'list'));
     $('list-view').classList.toggle('active',state.view === 'list'); $('list-view').setAttribute('aria-pressed',String(state.view === 'list'));
@@ -136,12 +151,17 @@
         card.onkeydown = (event) => { if (event.target !== card) return; if (event.key === 'Enter') {event.preventDefault();activate();} if (event.key === ' ' && item.kind === 'file') {event.preventDefault();select(item,!state.selected.has(item.id));} };
         const check = card.querySelector('.card-checkbox'); if (check) check.onchange = () => select(item,check.checked);
         card.querySelector('.card-menu').onclick = (event) => {event.stopPropagation();contextMenu(item,event.currentTarget);};
-        card.querySelector('img')?.addEventListener('error', (event) => { event.target.replaceWith(document.createTextNode('Không thể tải ảnh')); });
+        card.querySelector('img')?.addEventListener('error', (event) => {
+          event.target.style.display = 'none';
+          const prev = event.target.closest('.file-preview');
+          if (prev && !prev.querySelector('.large-icon')) {
+            prev.insertAdjacentHTML('afterbegin', icon('image', 'large-icon'));
+          }
+        });
       });
     }
     renderSelection();
     const total = result.meta.total, start = total ? (state.page - 1) * result.meta.per_page + 1 : 0;
-    $('result-summary').textContent = total ? `Hiển thị ${start}–${Math.min(start + state.items.length - 1,total)} trong ${total} tài nguyên` : 'Chưa có tài nguyên';
   }
   function renderPagination(meta) {
     $('pagination').innerHTML = meta.last_page > 1 ? `<div class="pagination"><button class="page-button" data-page="${meta.page - 1}" ${meta.page <= 1 ? 'disabled' : ''}>←</button><span class="page-button active">${meta.page} / ${meta.last_page}</span><button class="page-button" data-page="${meta.page + 1}" ${meta.page >= meta.last_page ? 'disabled' : ''}>→</button></div>` : '';

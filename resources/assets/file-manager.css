@@ -650,14 +650,16 @@
     right: 0;
     border-radius: 3px;
 }
-.kbtech-fm .tab span {
+.kbtech-fm .tab span,
+.kbtech-fm .tab-badge {
     background: #f0f2f6;
     color: #8b919e;
     font-size: 9px;
     padding: 2px 6px;
     border-radius: 5px;
 }
-.kbtech-fm .tab.active span {
+.kbtech-fm .tab.active span,
+.kbtech-fm .tab.active .tab-badge {
     background: var(--brand-soft);
     color: #a08018;
 }
@@ -766,6 +768,11 @@
     gap: 16px;
     padding: 0 22px 22px;
     min-height: 190px;
+}
+.kbtech-fm .file-grid.is-loading {
+    opacity: 0.55;
+    pointer-events: none;
+    transition: opacity 0.15s ease-in-out;
 }
 .kbtech-fm .file-card {
     border: 1px solid #e8eaf0;

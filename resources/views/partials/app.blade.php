@@ -86,11 +86,11 @@
             <section class="library-panel" aria-label="Danh sách tài nguyên">
                 <div class="library-toolbar">
                     <div class="tabs" role="tablist" aria-label="Lọc theo loại file">
-                        <button class="tab active" data-type="" role="tab" aria-selected="true">Tất cả <span id="total-count">0</span></button>
-                        <button class="tab" data-type="image" role="tab" aria-selected="false">Hình ảnh</button>
-                        <button class="tab" data-type="document" role="tab" aria-selected="false">Tài liệu</button>
-                        <button class="tab" data-type="video" role="tab" aria-selected="false">Video</button>
-                        <button class="tab" data-type="archive" role="tab" aria-selected="false">File nén</button>
+                        <button class="tab active" data-type="" role="tab" aria-selected="true">Tất cả <span class="tab-badge" id="count-all">0</span><span id="total-count" hidden>0</span></button>
+                        <button class="tab" data-type="image" role="tab" aria-selected="false">Hình ảnh <span class="tab-badge" id="count-image">0</span></button>
+                        <button class="tab" data-type="document" role="tab" aria-selected="false">Tài liệu <span class="tab-badge" id="count-document">0</span></button>
+                        <button class="tab" data-type="video" role="tab" aria-selected="false">Video <span class="tab-badge" id="count-video">0</span></button>
+                        <button class="tab" data-type="archive" role="tab" aria-selected="false">File nén <span class="tab-badge" id="count-archive">0</span></button>
                     </div>
                     <div class="toolbar-controls">
                         <label class="search-box">
