@@ -15,6 +15,14 @@ Route::prefix(config('file-manager.prefix'))->name('file-manager.')->group(funct
         Route::delete('api/nodes/{id}', [FM::class, 'trash'])->whereNumber('id')->name('trash');
         Route::post('api/nodes/{id}/restore', [FM::class, 'restore'])->whereNumber('id')->name('restore');
         Route::delete('api/nodes/{id}/purge', [FM::class, 'purge'])->whereNumber('id')->name('purge');
+        Route::post('api/nodes/{id}/duplicate', [FM::class, 'duplicate'])->whereNumber('id')->name('duplicate');
+        Route::get('api/nodes/{id}/details', [FM::class, 'details'])->whereNumber('id')->name('details');
+        Route::post('api/batch/move', [FM::class, 'batchMove'])->name('batch-move');
+        Route::post('api/batch/trash', [FM::class, 'batchTrash'])->name('batch-trash');
+        Route::post('api/batch/restore', [FM::class, 'batchRestore'])->name('batch-restore');
+        Route::delete('api/batch/purge', [FM::class, 'batchPurge'])->name('batch-purge');
+        Route::post('api/batch/download', [FM::class, 'batchDownload'])->name('batch-download');
+        Route::delete('api/trash/empty', [FM::class, 'emptyTrash'])->name('empty-trash');
         Route::post('api/nodes/{id}/transform', [FM::class, 'transform'])->whereNumber('id')->name('transform');
         Route::get('api/nodes/{id}/grants', [FM::class, 'grants'])->whereNumber('id')->name('grants');
         Route::put('api/nodes/{id}/grants', [FM::class, 'saveGrant'])->whereNumber('id')->name('save-grant');

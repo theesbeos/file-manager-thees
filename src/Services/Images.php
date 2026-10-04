@@ -7,8 +7,21 @@ use Illuminate\Validation\ValidationException;
 
 class Images
 {
-    public function dimensions(string $bytes): array
+    public function dimensions(string $bytes, string $mime = ''): array
     {
+        if ($mime === 'image/svg+xml' || (str_contains(substr($bytes, 0, 300), '<svg') && str_contains($bytes, '</svg>'))) {
+            $width = null;
+            $height = null;
+            if (preg_match('/<svg[^>]+viewBox=["\']\s*[\d.]+\s+[\d.]+\s+([\d.]+)\s+([\d.]+)\s*["\']/i', $bytes, $matches)) {
+                $width = (int) round((float) $matches[1]);
+                $height = (int) round((float) $matches[2]);
+            } elseif (preg_match('/<svg[^>]+width=["\']([\d.]+)p?x?["\'][^>]+height=["\']([\d.]+)p?x?["\']/i', $bytes, $matches)) {
+                $width = (int) round((float) $matches[1]);
+                $height = (int) round((float) $matches[2]);
+            }
+            return [$width, $height];
+        }
+
         $info = @getimagesizefromstring($bytes);
         if (! $info || $info[0] * $info[1] > config('file-manager.images.max_pixels')) {
             throw ValidationException::withMessages(['file' => 'Ảnh không hợp lệ hoặc vượt giới hạn số pixel.']);

@@ -19,12 +19,16 @@ return [
         'types' => [
             'jpg' => ['image/jpeg'], 'jpeg' => ['image/jpeg'],
             'png' => ['image/png'], 'webp' => ['image/webp'], 'gif' => ['image/gif'],
+            'svg' => ['image/svg+xml'],
             'pdf' => ['application/pdf'], 'txt' => ['text/plain'],
             'csv' => ['text/plain', 'text/csv'], 'zip' => ['application/zip', 'application/x-zip-compressed'],
             'docx' => ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip'],
             'xlsx' => ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip'],
             'pptx' => ['application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/zip'],
-            'mp4' => ['video/mp4'], 'webm' => ['video/webm'],
+            'mp4' => ['video/mp4'], 'webm' => ['video/webm'], 'mov' => ['video/quicktime'],
+            'mp3' => ['audio/mpeg', 'audio/mp3'], 'wav' => ['audio/wav', 'audio/x-wav'],
+            'ogg' => ['audio/ogg', 'video/ogg'], 'm4a' => ['audio/mp4', 'audio/x-m4a'],
+            'json' => ['application/json', 'text/plain'], 'md' => ['text/markdown', 'text/plain'],
         ],
     ],
     'images' => [

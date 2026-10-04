@@ -68,8 +68,11 @@ class Library
         $thumbnailPath = null;
         $dimensions = [null, null];
         try {
-            if (str_starts_with($attributes['mime'], 'image/')) {
-                $dimensions = $this->images->dimensions($bytes);
+            if ($attributes['mime'] === 'image/svg+xml') {
+                $dimensions = $this->images->dimensions($bytes, 'image/svg+xml');
+                $thumbnailPath = null;
+            } elseif (str_starts_with($attributes['mime'], 'image/')) {
+                $dimensions = $this->images->dimensions($bytes, $attributes['mime']);
                 $thumbnail = $this->images->thumbnail($bytes);
                 $thumbnailPath = 'thumbnails/'.Str::uuid().'.webp';
                 if (! $disk->put($thumbnailPath, $thumbnail)) { throw new \RuntimeException('Không thể lưu thumbnail.'); }
@@ -161,6 +164,177 @@ class Library
                 }
                 $child->forceDelete();
             });
+        }
+    }
+
+    public function duplicate(Node $node, Authenticatable $user): Node
+    {
+        $this->access->authorize($user, 'upload', $node->parent);
+        abort_unless($node->kind === 'file', 422, 'Chỉ có thể nhân bản tệp tin.');
+
+        $disk = Storage::disk($node->disk);
+        abort_unless($disk->exists($node->path), 404, 'Không tìm thấy tệp gốc trên ổ lưu trữ.');
+
+        $ext = $node->extension ? '.'.$node->extension : '';
+        $baseName = pathinfo($node->name, PATHINFO_FILENAME);
+        $newName = $this->name($baseName.' (Copy)'.$ext);
+
+        $newPath = 'originals/'.date('Y/m').'/'.Str::uuid().$ext;
+        $newThumbPath = null;
+
+        if (! $disk->copy($node->path, $newPath)) {
+            throw new \RuntimeException('Không thể sao chép tệp trên ổ lưu trữ.');
+        }
+
+        if ($node->thumbnail_path && $disk->exists($node->thumbnail_path)) {
+            $newThumbPath = 'thumbnails/'.Str::uuid().'.webp';
+            $disk->copy($node->thumbnail_path, $newThumbPath);
+        }
+
+        return DB::transaction(function () use ($node, $user, $newName, $newPath, $newThumbPath) {
+            return Node::create([
+                'parent_id' => $node->parent_id,
+                'owner_id' => (string) $user->getAuthIdentifier(),
+                'visibility' => $node->visibility,
+                'name' => $newName,
+                'kind' => 'file',
+                'disk' => $node->disk,
+                'path' => $newPath,
+                'thumbnail_path' => $newThumbPath,
+                'mime' => $node->mime,
+                'extension' => $node->extension,
+                'size' => $node->size,
+                'width' => $node->width,
+                'height' => $node->height,
+            ]);
+        });
+    }
+
+    public function batchMove(array $ids, ?int $parentId, Authenticatable $user): int
+    {
+        $parent = $parentId ? Node::findOrFail($parentId) : null;
+        if ($parent) {
+            abort_unless($parent->kind === 'folder', 422, 'Đích phải là thư mục.');
+            $this->assertActive($parent);
+        }
+        $count = 0;
+        $nodes = Node::whereIn('id', $ids)->get();
+        foreach ($nodes as $node) {
+            $this->move($node, $parent, $user);
+            $count++;
+        }
+        return $count;
+    }
+
+    public function batchTrash(array $ids, Authenticatable $user): int
+    {
+        $nodes = Node::whereIn('id', $ids)->get();
+        $count = 0;
+        foreach ($nodes as $node) {
+            $this->trash($node, $user);
+            $count++;
+        }
+        return $count;
+    }
+
+    public function batchRestore(array $ids, Authenticatable $user): int
+    {
+        $nodes = Node::onlyTrashed()->whereIn('id', $ids)->get();
+        $count = 0;
+        foreach ($nodes as $node) {
+            $this->restore($node, $user);
+            $count++;
+        }
+        return $count;
+    }
+
+    public function batchPurge(array $ids, Authenticatable $user): int
+    {
+        $nodes = Node::onlyTrashed()->whereIn('id', $ids)->get();
+        $count = 0;
+        foreach ($nodes as $node) {
+            $this->purge($node, $user);
+            $count++;
+        }
+        return $count;
+    }
+
+    public function emptyTrash(Authenticatable $user): int
+    {
+        $trashed = Node::onlyTrashed()->get();
+        $count = 0;
+        foreach ($trashed as $node) {
+            if ($this->access->allows($user, 'delete', $node)) {
+                $this->purge($node, $user);
+                $count++;
+            }
+        }
+        return $count;
+    }
+
+    public function createZip(array $ids, Authenticatable $user): string
+    {
+        $nodes = Node::whereIn('id', $ids)->get();
+        abort_if($nodes->isEmpty(), 422, 'Không có tệp tin nào được chọn.');
+
+        $zipFile = tempnam(sys_get_temp_dir(), 'fm_zip_');
+        $zip = new \ZipArchive();
+        if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            throw new \RuntimeException('Không thể khởi tạo tệp nén ZIP.');
+        }
+
+        $allFiles = [];
+        foreach ($nodes as $node) {
+            if ($this->access->allows($user, 'view', $node)) {
+                if ($node->kind === 'file') {
+                    $allFiles[] = ['node' => $node, 'pathInZip' => $node->name];
+                } elseif ($node->kind === 'folder') {
+                    $this->collectFolderFiles($node, $node->name, $user, $allFiles);
+                }
+            }
+        }
+
+        abort_if(empty($allFiles), 422, 'Không có tệp tin nào để nén tải về.');
+
+        $usedPaths = [];
+        foreach ($allFiles as $item) {
+            /** @var Node $fNode */
+            $fNode = $item['node'];
+            $disk = Storage::disk($fNode->disk);
+            if (! $disk->exists($fNode->path)) {
+                continue;
+            }
+
+            $entryName = $item['pathInZip'];
+            if (isset($usedPaths[$entryName])) {
+                $usedPaths[$entryName]++;
+                $ext = $fNode->extension ? '.'.$fNode->extension : '';
+                $base = pathinfo($entryName, PATHINFO_DIRNAME);
+                $fn = pathinfo($entryName, PATHINFO_FILENAME);
+                $entryName = ($base !== '.' ? $base.'/' : '').$fn.' ('.$usedPaths[$entryName].')'.$ext;
+            } else {
+                $usedPaths[$entryName] = 1;
+            }
+
+            $zip->addFromString($entryName, $disk->get($fNode->path));
+        }
+
+        $zip->close();
+        return $zipFile;
+    }
+
+    private function collectFolderFiles(Node $folder, string $basePath, Authenticatable $user, array &$allFiles): void
+    {
+        $children = Node::where('parent_id', $folder->id)->get();
+        foreach ($children as $child) {
+            if (! $this->access->allows($user, 'view', $child)) {
+                continue;
+            }
+            if ($child->kind === 'file') {
+                $allFiles[] = ['node' => $child, 'pathInZip' => $basePath.'/'.$child->name];
+            } elseif ($child->kind === 'folder') {
+                $this->collectFolderFiles($child, $basePath.'/'.$child->name, $user, $allFiles);
+            }
         }
     }
 }

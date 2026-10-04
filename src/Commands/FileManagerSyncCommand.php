@@ -98,13 +98,20 @@ class FileManagerSyncCommand extends Command
                 $mime = $mime ?: 'application/octet-stream';
 
                 $dimensions = [null, null];
-                if (str_starts_with($mime, 'image/') && in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'])) {
+                if ($ext === 'svg' || (str_starts_with($mime, 'image/') && in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']))) {
                     try {
                         $fullPath = $disk->path($filePath);
                         if (file_exists($fullPath)) {
-                            $dim = @getimagesize($fullPath);
-                            if ($dim) {
-                                $dimensions = [$dim[0], $dim[1]];
+                            if ($ext === 'svg') {
+                                $content = @file_get_contents($fullPath);
+                                if ($content) {
+                                    $dimensions = app(\KBTech\FileManager\Services\Images::class)->dimensions($content);
+                                }
+                            } else {
+                                $dim = @getimagesize($fullPath);
+                                if ($dim) {
+                                    $dimensions = [$dim[0], $dim[1]];
+                                }
                             }
                         }
                     } catch (\Throwable) {}

@@ -1719,3 +1719,285 @@ dialog.fm-modal.wide {
         padding: 12px 16px;
     }
 }
+
+/* ========================================================
+   PRO FEATURES: Library Body & Inspector Drawer
+   ======================================================== */
+.kbtech-fm .library-body {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+    position: relative;
+    min-height: 400px;
+}
+.kbtech-fm .library-main {
+    flex: 1;
+    min-width: 0;
+}
+.kbtech-fm .inspector-drawer {
+    width: 310px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border: 1px solid #e8ecf1;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fmSlideIn .2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes fmSlideIn {
+    from { opacity: 0; transform: translateX(12px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+.kbtech-fm .inspector-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f2f5;
+    background: #fbfcfd;
+}
+.kbtech-fm .inspector-head strong {
+    font-size: 13px;
+    font-weight: 650;
+    color: var(--ink);
+}
+.kbtech-fm .inspector-content {
+    padding: 16px;
+    overflow-y: auto;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.kbtech-fm .inspector-empty {
+    text-align: center;
+    color: #9297a2;
+    padding: 40px 10px;
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+.kbtech-fm .inspector-thumb {
+    width: 100%;
+    height: 170px;
+    border-radius: 10px;
+    background: #f7f8fa;
+    border: 1px solid #edf0f4;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+}
+.kbtech-fm .inspector-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.kbtech-fm .inspector-meta {
+    display: grid;
+    gap: 9px;
+    border-top: 1px solid #f0f2f5;
+    padding-top: 12px;
+}
+.kbtech-fm .inspector-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+.kbtech-fm .inspector-row span {
+    color: #878c96;
+}
+.kbtech-fm .inspector-row strong {
+    color: var(--ink);
+    font-weight: 600;
+    text-align: right;
+    word-break: break-all;
+}
+.kbtech-fm .inspector-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+/* Breadcrumbs & Empty Trash button */
+.kbtech-fm .breadcrumbs-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.kbtech-fm .button.danger-outline {
+    border: 1px solid #ffccd2;
+    background: #fff5f6;
+    color: #df2036;
+    font-size: 12px;
+    font-weight: 550;
+    padding: 5px 12px;
+    border-radius: 7px;
+    gap: 6px;
+    display: inline-flex;
+    align-items: center;
+}
+.kbtech-fm .button.danger-outline:hover {
+    background: #ffe3e6;
+    border-color: #f79aa4;
+}
+
+/* Toolbar separator & Clear search button */
+.kbtech-fm .toolbar-sep {
+    width: 1px;
+    height: 18px;
+    background: #e5e8ed;
+    margin: 0 4px;
+}
+.kbtech-fm .search-clear {
+    border: 0;
+    background: #e8ebf0;
+    color: #646a78;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 12px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+.kbtech-fm .search-clear:hover {
+    background: #d4d8e0;
+    color: #1a1e28;
+}
+
+/* Selection Bar Upgrade */
+.kbtech-fm .selection-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 18px;
+    background: #20242e;
+    color: #ffffff;
+    border-radius: 10px;
+    margin: 0 22px 14px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+}
+.kbtech-fm .selection-left label {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 550;
+}
+.kbtech-fm .selection-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.kbtech-fm .action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 550;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all .16s ease;
+}
+.kbtech-fm .action-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateY(-1px);
+}
+.kbtech-fm .action-btn .icon {
+    width: 15px;
+    height: 15px;
+}
+.kbtech-fm .action-btn.primary {
+    background: var(--brand);
+    color: #1a1900;
+    border-color: var(--brand);
+    font-weight: 650;
+}
+.kbtech-fm .action-btn.primary:hover {
+    background: #ffcf24;
+}
+.kbtech-fm .action-btn.danger {
+    background: #ef4444;
+    border-color: #ef4444;
+}
+.kbtech-fm .action-btn.danger:hover {
+    background: #dc2626;
+}
+.kbtech-fm .action-btn.secondary {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #cbd2dc;
+}
+.kbtech-fm .action-btn.secondary:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Drag and Drop into Folder Card */
+.kbtech-fm .file-card.drop-target {
+    border: 2px dashed var(--brand) !important;
+    background: var(--brand-soft) !important;
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(249, 193, 0, 0.25);
+}
+
+/* Audio type preview card */
+.kbtech-fm .file-preview.audio {
+    background: linear-gradient(135deg, #f3e8ff, #ede9fe);
+    color: #7c3aed;
+}
+
+/* Code viewer in modal */
+.kbtech-fm .code-preview-block {
+    background: #181c24;
+    color: #e2e8f0;
+    padding: 16px;
+    border-radius: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    max-height: 380px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    border: 1px solid #2d3342;
+}
+
+/* Shortcut Helper Modal Table */
+.kbtech-fm .shortcut-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+    margin-top: 14px;
+}
+.kbtech-fm .shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f2f5;
+}
+.kbtech-fm .shortcut-item kbd {
+    background: #f1f3f6;
+    border: 1px solid #d8dde6;
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}

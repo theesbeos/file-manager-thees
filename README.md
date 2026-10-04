@@ -1,4 +1,4 @@
-# 📂 KBTech Laravel File Manager
+# 📂 KBTech Laravel File Manager (v2.0 Enterprise)
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/theesbeos/file-manager-thees/main/resources/assets/preview.png" alt="KBTech File Manager Preview" width="100%" style="border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);" onerror="this.style.display='none'">
@@ -13,40 +13,70 @@
 
 ---
 
-**KBTech Laravel File Manager** là giải pháp quản lý tệp tin và thư viện đa phương tiện (Media Library) cao cấp dành riêng cho hệ sinh thái **Laravel 10** và **PHP 8.3**. Được thiết kế tối ưu hóa cho trải nghiệm người dùng hiện đại, giao diện tiếng Việt thân thiện, bảo mật chặt chẽ và tích hợp linh hoạt vào mọi dự án (CMS, CRM, Blog, E-commerce).
+**KBTech Laravel File Manager (v2.0)** là giải pháp quản lý tệp tin và thư viện đa phương tiện (Media Library) cao cấp, đa năng và tối ưu toàn diện dành riêng cho hệ sinh thái **Laravel 10** và **PHP 8.3**. 
+
+Được thiết kế theo tiêu chuẩn trải nghiệm hệ điều hành máy tính (Desktop-grade UX) với tốc độ phản hồi tức thì, giao diện tiếng Việt hiện đại, bảo mật chặt chẽ và khả năng nhúng linh hoạt vào mọi CMS, CRM, E-commerce, Blog hoặc Admin Dashboard.
 
 ---
 
 ## ✨ Tính Năng Nổi Bật
 
-- 🎨 **Giao diện hiện đại & Mượt mà**: Thiết kế theo chuẩn giao diện phẳng tinh tế, hỗ trợ tùy biến màu sắc thương hiệu (Brand Color), chuyển đổi linh hoạt giữa chế độ **Lưới (Grid)** và **Danh sách (List)**.
-- ⚡ **Kéo & Thả Đa Tệp (Drag & Drop)**: Tải lên hàng loạt tệp tin cùng lúc với thanh tiến trình trực quan, tự động kiểm tra định dạng và dung lượng trước khi đẩy lên máy chủ.
-- 🚀 **Hiệu Năng Siêu Tốc & Không N+1 Query**: Phân trang trực tiếp trên Database, truy vấn thống kê gộp 1 câu SQL duy nhất (~18ms), loại bỏ hoàn toàn hiện tượng giật chớp màn hình (skeleton flash) và giữ nguyên vị trí cuộn cây thư mục.
-- 🌳 **Cây thư mục lồng nhau (Folder Tree)**: Quản lý thư mục đa cấp mượt mà, hỗ trợ tạo mới, đổi tên, di chuyển tệp tin và thư mục nhanh chóng.
-- 🖼 **Bộ công cụ xử lý ảnh tích hợp**:
-  - Cắt ảnh (Crop), thay đổi kích thước (Resize), xoay ảnh.
-  - Đóng dấu bản quyền (Watermark) dạng chữ hỗ trợ Unicode tiếng Việt hoặc chèn logo thương hiệu.
-  - Tự động sinh ảnh thu nhỏ (Thumbnail) chuẩn định dạng hiện đại **WebP** giúp tải trang siêu tốc.
-  - Giữ nguyên vẹn ảnh gốc chất lượng cao và tạo phiên bản mới khi chỉnh sửa.
-- 🛡 **Bảo mật & Phân quyền chuyên sâu (Granular ACL)**:
-  - Phân tách rõ ràng giữa **Thư viện chung (Public Shared)** và **Thư viện riêng tư (Private)**.
-  - Phân quyền theo từng người dùng (User ID) với cơ chế kế thừa từ thư mục cha xuống thư mục con.
-  - Dễ dàng ghi đè chính sách ủy quyền thông qua hệ thống **Laravel Gates** (`view`, `upload`, `update`, `delete`, `share`).
-  - Hỗ trợ phát trực tuyến an toàn (Stream media) với HTTP Range requests, che giấu đường dẫn tệp thực trên máy chủ.
-- 🎯 **File Picker thông minh**:
-  - Dễ dàng tích hợp vào bất kỳ form nhập liệu, popup modal hoặc trình soạn thảo WYSIWYG.
-  - Hỗ trợ cả chế độ chọn đơn (Single) và chọn nhiều (Multiple), tự động điền ID và trả dữ liệu JSON chi tiết.
-- 🗑 **Thùng rác an toàn & Quản lý dung lượng (Quota)**:
-  - Khôi phục hoặc xóa vĩnh viễn tệp tin khỏi hệ thống.
-  - Theo dõi dung lượng đã sử dụng theo thời gian thực với thanh chỉ báo hạn ngạch trực quan.
+### 1. 🗂 Trải Nghiệm Thao Tác Chuyên Nghiệp (Desktop-Grade UX)
+- 🖱 **Kéo & Thả Di Chuyển Trực Quan (Native Drag & Drop)**: Kéo một hoặc nhiều tệp được chọn thả trực tiếp vào thư mục trên lưới hoặc trên cây thư mục (Sidebar Folder Tree) để di chuyển tức thì.
+- 📋 **Dán Ảnh Trực Tiếp Từ Bộ Nhớ Tạm (Paste-to-Upload)**: Chụp màn hình (`Win + Shift + S` hoặc `Cmd + Shift + 4`) và chỉ cần nhấn `Ctrl + V` / `Cmd + V` ngay trong File Manager để tải lên không cần lưu file trung gian.
+- 🎯 **Menu Chuột Phải Đa Năng (Context Menu)**: Nhấp chuột phải vào bất kỳ tệp hoặc thư mục nào tại đúng vị trí con trỏ chuột để thực hiện nhanh: Xem trước, Thông tin chi tiết, Nhân bản, Sao chép link, Đổi tên, Di chuyển, Phân quyền, Xóa.
+- ⌨️ **Hệ Thống Phím Tắt Tiêu Chuẩn (Pro Keyboard Shortcuts)**:
+  - `Ctrl + A` / `Cmd + A`: Chọn tất cả tệp tin trong trang hiện tại.
+  - `Space`: Xem nhanh tệp tin đang chọn (Quick Look).
+  - `Delete` / `Backspace`: Chuyển tệp vào thùng rác.
+  - `F2`: Đổi tên nhanh tệp tin / thư mục.
+  - `I`: Bật / Tắt bảng xem thông tin chi tiết (Inspector Drawer).
+  - `/`: Đưa con trỏ nhanh vào thanh tìm kiếm.
+  - `?`: Mở bảng tra cứu phím tắt trợ giúp.
+  - `Esc`: Bỏ chọn hoặc đóng cửa sổ đang mở.
+
+### 2. 📦 Xử Lý Hàng Loạt & Thùng Rác Thông Minh (Batch Operations)
+- 🗜 **Tải Xuống Tệp Nén ZIP Hàng Loạt (Batch ZIP Streaming)**: Chọn nhiều tệp hoặc thư mục và tải về toàn bộ dưới dạng file `.zip` nén chuẩn, tự động đệ quy và stream trực tiếp không ngốn RAM máy chủ.
+- 📑 **Sao Chép Nhiều Đường Dẫn (Batch Copy URLs)**: Sao chép danh sách đường dẫn trực tiếp của toàn bộ tệp đã chọn vào clipboard chỉ với 1 click.
+- 📦 **Di Chuyển & Xóa Hàng Loạt (Batch Move / Trash / Purge)**: Di chuyển hàng loạt tệp sang thư mục đích, chuyển vào thùng rác hoặc khôi phục nhiều tệp cùng lúc.
+- 🧹 **Dọn Sạch Thùng Rác (Empty Trash)**: Xóa vĩnh viễn toàn bộ tệp và thư mục trong thùng rác cùng tệp vật lý trên ổ cứng trong 1 thao tác an toàn.
+
+### 3. 📑 Bảng Chi Tiết Tài Nguyên (Inspector Drawer)
+- Ngăn trượt bên phải hiển thị toàn diện thông số tệp: Bản xem trước lớn, Định dạng MIME, Dung lượng, Độ phân giải (`Width × Height`), Ngày tạo, Ngày sửa đổi, Không gian (Chung/Riêng tư).
+- Hộp thoại sao chép nhanh URL trực tiếp và các nút hành động tiện lợi (Tải về, Nhân bản, Đổi tên, Xóa).
+- Ghi nhớ trạng thái bật/tắt qua `localStorage`.
+
+### 4. 🎵 Hỗ Trợ Đa Phương Tiện Mở Rộng Toàn Diện
+- 🎧 **Âm Thanh (Audio)**: Hỗ trợ tệp `mp3`, `wav`, `ogg`, `m4a`, `flac`, `aac` kèm trình phát âm thanh (Audio Player) trực tiếp trên giao diện và tab thống kê riêng biệt.
+- 📐 **Vector SVG An Toàn**: Xem trước và tải lên tệp `.svg` với cơ chế bóc tách kích thước `viewBox` tự động, phòng ngừa lỗi xử lý ảnh GD bitmap.
+- 🎬 **Video Nâng Cao**: Xem trước trực tuyến mượt mà các định dạng `mp4`, `webm`, `mov`, `avi`, `mkv`.
+- 💻 **Mã Nguồn & Văn Bản**: Xem trước trực tiếp nội dung các tệp `json`, `sql`, `md`, `txt`, `csv`, `log`, `css`, `js`, `html` với giao diện Code Viewer chuyên nghiệp.
+- 📄 **Tài Liệu PDF**: Nhúng trình đọc PDF trực tiếp ngay trong giao diện xem trước.
+
+### 5. 🖼 Bộ Xử Lý Ảnh Tích Hợp (In-Browser Image Editor)
+- Cắt ảnh (Crop), thay đổi kích thước (Resize), giữ tỉ lệ gốc (Aspect Ratio).
+- Chèn Watermark chữ Unicode tiếng Việt hoặc chèn logo thương hiệu.
+- Xuất bản đa định dạng: `WebP` (tối ưu SEO & tải trang), `JPEG`, `PNG`.
+- Tự động sinh ảnh thu nhỏ (Thumbnail) và luôn giữ nguyên vẹn ảnh gốc chất lượng cao.
+
+### 6. 🚀 Hiệu Năng Siêu Tốc & Tối Ưu Truy Vấn
+- **Không N+1 Query**: Thống kê số lượng theo từng loại tệp gộp trong 1 câu truy vấn SQL duy nhất (~18ms).
+- Phân trang chuẩn Database, tải dữ liệu mượt mà, không giật màn hình (skeleton flash).
+- Lọc theo phân loại, tìm kiếm tức thì theo từ khóa, sắp xếp đa tiêu chí (Mới nhất, Cũ nhất, Tên A-Z, Tên Z-A, Dung lượng lớn/nhỏ).
+
+### 7. 🛡 Bảo Mật Chặt Chẽ & Phân Quyền Sâu Rộng (Granular ACL)
+- Phân tách rõ ràng giữa **Thư viện chung (Public Shared)** và **Thư viện riêng tư (Private)**.
+- Phân quyền theo User ID kế thừa tự động từ thư mục cha xuống con.
+- Dễ dàng can thiệp và ghi đè quyền thông qua hệ thống **Laravel Gates** (`view`, `upload`, `update`, `delete`, `share`).
+- Stream dữ liệu qua HTTP Range requests an toàn, che giấu đường dẫn tệp thực tế trên máy chủ.
 
 ---
 
 ## 📋 Yêu Cầu Hệ Thống
 
-- **PHP**: `^8.3` (Kích hoạt extension: `fileinfo`, `gd`, `pdo`)
+- **PHP**: `^8.3` (Extension bắt buộc: `fileinfo`, `gd`, `zip`, `pdo`, `mbstring`)
 - **Laravel Framework**: `^10.48`
-- Cơ chế xác thực Session người dùng (hỗ trợ `web` & `auth` middleware của Laravel)
+- Cơ chế xác thực Session (`web` & `auth` middleware của Laravel)
 
 ---
 
@@ -54,7 +84,7 @@
 
 ### 1. Thêm Package vào dự án Laravel
 
-Trong file `composer.json` của dự án Laravel chủ, cấu hình repository trỏ tới thư mục package:
+Trong file `composer.json` của dự án Laravel:
 
 ```json
 "repositories": [
@@ -73,24 +103,15 @@ composer require kbtech/laravel-file-manager:@dev
 
 ### 2. Xuất bản cấu hình & Tài nguyên giao diện
 
-Chạy các lệnh Artisan sau để publish file cấu hình và assets (CSS/JS) vào ứng dụng:
-
 ```bash
 # Xuất bản file cấu hình config/file-manager.php
 php artisan vendor:publish --tag=file-manager-config
 
 # Xuất bản assets (CSS, JS) vào public/vendor/file-manager
-php artisan vendor:publish --tag=file-manager-assets
+php artisan vendor:publish --tag=file-manager-assets --force
 ```
 
-> **Lưu ý**: Khi cập nhật phiên bản mới của package, hãy thêm flag `--force` để làm mới assets:
-> ```bash
-> php artisan vendor:publish --tag=file-manager-assets --force
-> ```
-
 ### 3. Chạy Migration tạo bảng CSDL
-
-Tạo các bảng dữ liệu quản lý tệp (`fm_nodes`), phân quyền (`fm_grants`) và khóa tương tranh (`fm_locks`):
 
 ```bash
 php artisan migrate
@@ -98,13 +119,13 @@ php artisan migrate
 
 ### 4. Đồng bộ các tệp tin có sẵn trên máy chủ (Tùy chọn)
 
-Nếu bạn có sẵn các tệp tin/hình ảnh trong storage (ví dụ `storage/app/public`), hãy đồng bộ toàn bộ vào cơ sở dữ liệu File Manager:
+Quét và nhập toàn bộ tệp tin, ảnh, âm thanh, video có sẵn trong storage vào cơ sở dữ liệu:
 
 ```bash
 php artisan file-manager:sync
 ```
 
-Hoặc chỉ định disk cụ thể và làm mới chỉ mục:
+Hoặc chỉ định disk cụ thể và làm mới dữ liệu:
 
 ```bash
 php artisan file-manager:sync --disk=public --fresh
@@ -112,55 +133,67 @@ php artisan file-manager:sync --disk=public --fresh
 
 ### 5. Truy cập & Trải nghiệm
 
-Đăng nhập vào tài khoản người dùng trên ứng dụng của bạn và truy cập:
+Đăng nhập vào tài khoản trên website của bạn và truy cập:
 👉 `https://your-domain.test/file-manager`
 
 ---
 
-## ⚙️ Cấu Hình Chi Tiết
-
-File cấu hình đặt tại `config/file-manager.php`. Dưới đây là các thông số chính bạn có thể tùy biến:
+## ⚙️ Cấu Hình Chi Tiết (`config/file-manager.php`)
 
 ```php
 return [
-    // Tiền tố đường dẫn truy cập (vd: /file-manager)
+    // Tiền tố route truy cập (mặc định: /file-manager)
     'prefix' => 'file-manager',
 
     // Middleware bảo vệ
     'middleware' => ['web', 'auth'],
 
-    // Layout của ứng dụng chủ để nhúng File Manager (vd: 'layouts.admin', 'admin.master', ...)
+    // Layout ứng dụng chủ khi nhúng (ví dụ: 'layouts.admin', 'admin.master')
     // Nếu để null: hiển thị chế độ độc lập (standalone) toàn màn hình.
     'layout' => env('FILE_MANAGER_LAYOUT', null),
     'section' => env('FILE_MANAGER_SECTION', 'content'),
 
-    // Disk lưu trữ private (khuyến nghị không symlink ra public)
+    // Disk lưu trữ private (khuyên dùng disk riêng ngoài public)
     'disk' => 'file-manager',
 
-    // Cho phép truy cập URL file chung trên trang public mà không cần đăng nhập
+    // Cho phép khách truy cập URL tài nguyên chung công khai
     'public_shared' => true,
 
-    // Tùy biến thương hiệu
+    // Tùy biến thương hiệu & màu sắc chủ đạo
     'brand' => [
         'name' => 'KBTech',
-        'color' => '#f9c100', // Mã màu chủ đạo
+        'color' => '#f9c100', // Mã màu Hex chủ đạo
         'watermark' => 'KBTECH',
     ],
 
     // Giới hạn tải lên
     'upload' => [
-        'max_kb' => 20480,       // Tối đa 20 MB / tệp
-        'max_files' => 20,       // Tối đa 20 tệp / lượt tải
+        'max_kb' => 20480,       // 20 MB / file
+        'max_files' => 20,       // 20 file / lần tải
         'quota_bytes' => 10 * 1024 * 1024 * 1024, // Hạn ngạch 10 GB
         'types' => [
+            // Hình ảnh & Vector
             'jpg' => ['image/jpeg'], 'jpeg' => ['image/jpeg'],
             'png' => ['image/png'], 'webp' => ['image/webp'], 'gif' => ['image/gif'],
+            'svg' => ['image/svg+xml', 'text/plain', 'text/xml'],
+            
+            // Âm thanh
+            'mp3' => ['audio/mpeg', 'audio/mp3'],
+            'wav' => ['audio/wav', 'audio/x-wav'],
+            'ogg' => ['audio/ogg'],
+            'm4a' => ['audio/mp4', 'audio/x-m4a'],
+
+            // Video
+            'mp4' => ['video/mp4'], 'webm' => ['video/webm'], 'mov' => ['video/quicktime'],
+
+            // Tài liệu & Code
             'pdf' => ['application/pdf'], 'txt' => ['text/plain'],
-            'csv' => ['text/plain', 'text/csv'], 'zip' => ['application/zip'],
+            'csv' => ['text/plain', 'text/csv'], 'zip' => ['application/zip', 'application/x-zip-compressed'],
             'docx' => ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
             'xlsx' => ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
             'pptx' => ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
-            'mp4' => ['video/mp4'], 'webm' => ['video/webm'],
+            'json' => ['application/json', 'text/plain'],
+            'md' => ['text/plain', 'text/markdown'],
         ],
     ],
 
@@ -171,36 +204,107 @@ return [
         'thumbnail_width' => 480,
         'thumbnail_height' => 360,
         'quality' => 85,
-        'font' => null,             // Đường dẫn file .ttf hỗ trợ tiếng Việt có dấu
-        'watermark_image' => null,  // Đường dẫn tệp ảnh logo trên server
+        'font' => null,             // File .ttf tiếng Việt cho Watermark
+        'watermark_image' => null,  // Đường dẫn ảnh logo watermark
     ],
 ];
 ```
 
-### 🖥️ Nhúng vào Giao Diện Quản Trị (Embedded vs Standalone Mode)
+---
 
-Package hỗ trợ linh hoạt 2 chế độ hiển thị:
+## 🧩 Tích Hợp File Picker Vào Dự Án
 
-1. **Chế độ Nhúng (Embedded - Khuyên dùng cho Admin Dashboard)**:
-   - Khi dự án đã có sẵn giao diện quản trị (Header, Sidebar menu bên trái), bạn chỉ cần cấu hình trong file `.env` hoặc `config/file-manager.php`:
-     ```env
-     FILE_MANAGER_LAYOUT=layouts.admin
-     FILE_MANAGER_SECTION=content
-     ```
-   - File Manager sẽ tự động hiển thị gọn gàng bên trong vùng nội dung `@yield('content')`, hoạt động như một thành phần (component) nội bộ, **giữ nguyên toàn bộ thanh menu (sidebar) và thanh điều hướng (header) của hệ thống cũ**, không bị tràn hay che mất giao diện chung.
-2. **Chế độ Độc lập (Standalone Mode)**:
-   - Để `FILE_MANAGER_LAYOUT=null` hoặc truy cập kèm tham số: `/file-manager?standalone=1`.
-   - File Manager sẽ mở toàn màn hình, tối ưu khi chạy độc lập hoặc mở trong cửa sổ popup chọn file (`picker=1`).
+### Cách 1: Gắn Tự Động Vào Nút Bấm (`KBTechFilePicker.attach`)
+
+Cực kỳ tiện lợi cho các form CRUD thông thường:
+
+```html
+<div class="form-group">
+  <label>Ảnh đại diện:</label>
+  <div style="display: flex; gap: 12px; align-items: center;">
+    <img id="avatar-preview" src="/placeholder.png" width="90" height="90" style="object-fit: cover; border-radius: 8px;">
+    <input type="hidden" id="avatar-id" name="avatar_id">
+    <button type="button" id="btn-pick-avatar" class="btn btn-primary">Chọn ảnh đại diện</button>
+  </div>
+</div>
+
+<script src="/vendor/file-manager/picker.js"></script>
+<script>
+  KBTechFilePicker.attach('#btn-pick-avatar', {
+    type: 'image',
+    input: '#avatar-id',
+    preview: '#avatar-preview'
+  });
+</script>
+```
+
+### Cách 2: Mở Hộp Thoại Thủ Công (`KBTechFilePicker.open`)
+
+Hỗ trợ chọn nhiều tệp và nhận dữ liệu Callback:
+
+```javascript
+KBTechFilePicker.open({
+  url: '/file-manager',
+  type: 'image',           // 'image' | 'video' | 'audio' | 'document' | ''
+  multiple: true,          // Cho phép chọn nhiều tệp
+  onSelect: function (files) {
+    console.log('Các tệp đã chọn:', files);
+    files.forEach(file => {
+      console.log(file.id, file.name, file.url, file.size);
+    });
+  }
+});
+```
+
+### Cách 3: Tích Hợp Trình Soạn Thảo TinyMCE (5 / 6 / 7)
+
+Chỉ cần khai báo 1 dòng trong cấu hình `tinymce.init`:
+
+```javascript
+tinymce.init({
+  selector: '#editor',
+  plugins: 'image media link code',
+  toolbar: 'undo redo | formatselect | bold italic | link image media | code',
+  file_picker_callback: KBTechFilePicker.tinyMCECallback
+});
+```
 
 ---
 
-## 🔒 Phân Quyền & Tích Hợp Laravel Gates
+## 📡 Danh Sách API Endpoints
 
-Hệ thống cung cấp cơ chế phân quyền nhiều tầng:
+Tất cả API được bảo vệ bởi middleware xác thực của hệ thống và tuân thủ CSRF token:
 
-1. **Phân quyền người sở hữu**: Người tải lên có toàn quyền với tệp của mình. Chủ sở hữu thư mục có quyền quản lý toàn bộ tệp bên trong.
-2. **Kế thừa quyền**: Phân quyền trên thư mục cha tự động áp dụng xuống các thư mục con và tệp tin bên trong.
-3. **Ghi đè bằng Laravel Gates**: Ứng dụng chủ có thể can thiệp vào quyết định ủy quyền bằng cách đăng ký Gates trong `AuthServiceProvider.php`:
+| Phương thức | Endpoint | Mô tả |
+| :--- | :--- | :--- |
+| `GET` | `/file-manager` | Giao diện quản lý thư viện tài nguyên |
+| `GET` | `/file-manager/media/{id}` | Phát trực tuyến nội dung media / file |
+| `GET` | `/file-manager/api/nodes` | Danh sách tệp/thư mục kèm bộ lọc và thống kê |
+| `GET` | `/file-manager/api/nodes/{id}/details` | Thông tin chi tiết chuyên sâu của 1 tài nguyên |
+| `GET` | `/file-manager/api/tree` | Cây sơ đồ phân cấp thư mục |
+| `POST` | `/file-manager/api/upload` | Tải lên đa tệp kèm kiểm tra định dạng và dung lượng |
+| `POST` | `/file-manager/api/folders` | Tạo thư mục mới |
+| `PATCH`| `/file-manager/api/nodes/{id}` | Đổi tên hoặc di chuyển tệp / thư mục |
+| `POST` | `/file-manager/api/nodes/{id}/duplicate` | Nhân bản tệp tin (tạo bản copy mới) |
+| `POST` | `/file-manager/api/nodes/{id}/transform` | Cắt (crop), đổi kích thước, chèn watermark ảnh |
+| `DELETE`| `/file-manager/api/nodes/{id}` | Chuyển tệp vào thùng rác |
+| `POST` | `/file-manager/api/nodes/{id}/restore` | Khôi phục tệp từ thùng rác |
+| `DELETE`| `/file-manager/api/nodes/{id}/purge` | Xóa vĩnh viễn tệp và dữ liệu vật lý |
+| `POST` | `/file-manager/api/batch/move` | Di chuyển hàng loạt tệp vào thư mục đích |
+| `DELETE`| `/file-manager/api/batch/trash` | Chuyển hàng loạt tệp vào thùng rác |
+| `POST` | `/file-manager/api/batch/restore` | Khôi phục hàng loạt tệp từ thùng rác |
+| `DELETE`| `/file-manager/api/batch/purge` | Xóa vĩnh viễn hàng loạt tệp tin |
+| `POST` | `/file-manager/api/batch/download` | Nén và tải xuống hàng loạt tệp thành file ZIP |
+| `DELETE`| `/file-manager/api/trash/empty` | Dọn sạch toàn bộ thùng rác |
+| `GET` | `/file-manager/api/nodes/{id}/grants` | Lấy danh sách phân quyền của tệp/thư mục |
+| `PUT` | `/file-manager/api/nodes/{id}/grants` | Cấp hoặc cập nhật quyền cho người dùng |
+| `DELETE`| `/file-manager/api/nodes/{id}/grants/{userId}` | Thu hồi quyền của người dùng |
+
+---
+
+## 🔒 Phân Quyền Với Laravel Gates
+
+Đăng ký can thiệp phân quyền dễ dàng trong `AuthServiceProvider.php` của bạn:
 
 ```php
 use App\Models\User;
@@ -209,118 +313,25 @@ use Illuminate\Support\Facades\Gate;
 
 public function boot(): void
 {
-    // Ví dụ: Cho phép Admin có mọi quyền
+    // Cấp toàn quyền cho Super Admin
     Gate::before(function (User $user, string $ability) {
         if ($user->isSuperAdmin()) {
             return true;
         }
     });
 
-    // Tùy biến kiểm tra quyền xem file
+    // Tùy biến quyền xem tệp
     Gate::define('file-manager.view', function (User $user, ?Node $node) {
-        if ($node === null) {
-            return true; // Truy cập thư mục gốc
-        }
-        return $node->user_id === $user->id || $user->hasRole('editor');
+        if ($node === null) return true; // Thư mục gốc
+        return $node->owner_id === (string)$user->id || $user->hasRole('editor');
     });
 
-    // Tùy biến kiểm tra quyền upload
+    // Tùy biến quyền tải lên
     Gate::define('file-manager.upload', function (User $user, ?Node $node) {
-        return $user->can_upload_files;
+        return $user->can_upload_files ?? true;
     });
 }
 ```
-
----
-
-## 🧩 Tích Hợp File Picker Vào Form Giao Diện
-
-Package cung cấp sẵn thư viện JavaScript `picker.js` giúp mở hộp thoại chọn tệp cực kỳ đơn giản:
-
-### Ví dụ 1: Chọn một ảnh đơn (Single Image Picker)
-
-```html
-<div class="form-group">
-  <label>Ảnh đại diện:</label>
-  <div style="display: flex; gap: 10px; align-items: center;">
-    <img id="avatar-preview" src="/placeholder.png" width="100" height="100" style="object-fit: cover; border-radius: 8px;">
-    <input type="hidden" id="avatar-id" name="avatar_id">
-    <button type="button" id="btn-pick-avatar" class="btn btn-secondary">Chọn ảnh</button>
-  </div>
-</div>
-
-<!-- Nạp script picker -->
-<script src="/vendor/file-manager/picker.js"></script>
-<script>
-document.getElementById('btn-pick-avatar').onclick = function () {
-    KBTechFilePicker.open({
-        url: '/file-manager',
-        type: 'image',          // Lọc chỉ hiển thị ảnh
-        multiple: false,        // Chỉ chọn 1 ảnh
-        input: '#avatar-id',    // Tự động gán ID vào hidden input
-        onSelect: function (file) {
-            // Nhận đối tượng tệp tin được chọn
-            document.getElementById('avatar-preview').src = file.url;
-            console.log('Tệp đã chọn:', file);
-        }
-    });
-};
-</script>
-```
-
-### Ví dụ 2: Chọn nhiều tài liệu / ảnh (Multiple Picker)
-
-```javascript
-KBTechFilePicker.open({
-    url: '/file-manager',
-    type: 'all',
-    multiple: true,
-    input: '#gallery-ids', // Gán mảng ID dạng JSON vào input
-    onSelect: function (files) {
-        files.forEach(file => {
-            console.log(file.name, file.url, file.size);
-        });
-    }
-});
-```
-
----
-
-## 📡 API Endpoints Tham Khảo
-
-Tất cả các API được bảo vệ bởi middleware xác thực của ứng dụng:
-
-| Phương thức | Tuyến đường (Route) | Mô tả |
-| :--- | :--- | :--- |
-| `GET` | `/file-manager` | Trang giao diện quản lý tệp |
-| `GET` | `/file-manager/media/{id}` | Phát trực tuyến nội dung media / file |
-| `GET` | `/file-manager/api/nodes` | Lấy danh sách tệp theo thư mục và bộ lọc |
-| `GET` | `/file-manager/api/tree` | Lấy sơ đồ cây thư mục |
-| `POST` | `/file-manager/api/upload` | Tải lên tệp mới (hỗ trợ đa tệp) |
-| `POST` | `/file-manager/api/folders` | Tạo thư mục mới |
-| `PATCH` | `/file-manager/api/nodes/{id}` | Đổi tên hoặc di chuyển tệp / thư mục |
-| `DELETE`| `/file-manager/api/nodes/{id}` | Chuyển tệp vào thùng rác |
-| `POST` | `/file-manager/api/nodes/{id}/restore` | Khôi phục tệp từ thùng rác |
-| `DELETE`| `/file-manager/api/nodes/{id}/purge` | Xóa vĩnh viễn tệp và dữ liệu vật lý |
-| `POST` | `/file-manager/api/nodes/{id}/transform` | Cắt, thu phóng hoặc đóng dấu ảnh |
-| `GET` | `/file-manager/api/nodes/{id}/grants` | Lấy danh sách phân quyền của tệp |
-| `PUT` | `/file-manager/api/nodes/{id}/grants` | Thêm / cập nhật quyền người dùng |
-| `DELETE`| `/file-manager/api/nodes/{id}/grants/{userId}` | Thu hồi quyền của người dùng |
-
----
-
-## 🛠 Tối Ưu Hóa & Ghi Chú Môi Trường Máy Chủ
-
-1. **Cấu hình PHP**: Đảm bảo các chỉ thị trong `php.ini` cho phép kích thước upload tương ứng với cấu hình package:
-   ```ini
-   upload_max_filesize = 50M
-   post_max_size = 50M
-   memory_limit = 256M
-   ```
-2. **Cấu hình Web Server (Nginx / Apache)**:
-   - Với **Nginx**, hãy kiểm tra `client_max_body_size 50M;`.
-   - Với **Apache**, kiểm tra `LimitRequestBody`.
-3. **Phông chữ tiếng Việt cho Watermark**: Nếu sử dụng tính năng đóng dấu văn bản tiếng Việt có dấu, hãy cấu hình đường dẫn font `.ttf` (ví dụ `Roboto-Bold.ttf` hoặc `BeVietnamPro.ttf`) trong `config/file-manager.php` tại mục `images.font`.
 
 ---
 

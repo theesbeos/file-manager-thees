@@ -23,6 +23,10 @@
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
     <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></symbol>
     <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 13 4-4M8 16l-1 1a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0M16 8l1-1a4 4 0 0 1 6 6l-4 4a4 4 0 0 1-6 0"/></symbol>
+    <symbol id="i-audio" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M7 16h10"/></symbol>
 </defs></svg>
 
 <div class="app-shell">
@@ -88,49 +92,82 @@
                     <div class="tabs" role="tablist" aria-label="Lọc theo loại file">
                         <button class="tab active" data-type="" role="tab" aria-selected="true">Tất cả <span class="tab-badge" id="count-all">0</span><span id="total-count" hidden>0</span></button>
                         <button class="tab" data-type="image" role="tab" aria-selected="false">Hình ảnh <span class="tab-badge" id="count-image">0</span></button>
-                        <button class="tab" data-type="document" role="tab" aria-selected="false">Tài liệu <span class="tab-badge" id="count-document">0</span></button>
                         <button class="tab" data-type="video" role="tab" aria-selected="false">Video <span class="tab-badge" id="count-video">0</span></button>
+                        <button class="tab" data-type="audio" role="tab" aria-selected="false">Âm thanh <span class="tab-badge" id="count-audio">0</span></button>
+                        <button class="tab" data-type="document" role="tab" aria-selected="false">Tài liệu <span class="tab-badge" id="count-document">0</span></button>
                         <button class="tab" data-type="archive" role="tab" aria-selected="false">File nén <span class="tab-badge" id="count-archive">0</span></button>
                     </div>
                     <div class="toolbar-controls">
                         <label class="search-box">
                             <svg class="icon"><use href="#i-search"/></svg>
                             <input id="search" type="search" placeholder="Tìm kiếm tài nguyên…" aria-label="Tìm kiếm tài nguyên">
+                            <button type="button" class="search-clear" id="search-clear" title="Xóa tìm kiếm" hidden>&times;</button>
                             <kbd>/</kbd>
                         </label>
                     </div>
                 </div>
 
                 <div class="content-toolbar">
-                    <div class="breadcrumbs" id="breadcrumbs"><button>Tất cả tài nguyên</button></div>
+                    <div class="breadcrumbs-area">
+                        <div class="breadcrumbs" id="breadcrumbs"><button>Tất cả tài nguyên</button></div>
+                        <button class="button danger-outline" id="empty-trash-btn" hidden><svg class="icon"><use href="#i-trash"/></svg>Dọn sạch thùng rác</button>
+                    </div>
                     <div class="sort-view">
                         <select id="sort" aria-label="Sắp xếp">
                             <option value="newest">Mới nhất trước</option>
                             <option value="oldest">Cũ nhất trước</option>
                             <option value="name">Tên A → Z</option>
+                            <option value="name_desc">Tên Z → A</option>
                             <option value="size">Dung lượng lớn nhất</option>
+                            <option value="size_asc">Dung lượng nhỏ nhất</option>
                         </select>
                         <div class="view-toggle">
-                            <button class="icon-button active" id="grid-view" aria-label="Chế độ lưới" aria-pressed="true"><svg class="icon"><use href="#i-grid"/></svg></button>
-                            <button class="icon-button" id="list-view" aria-label="Chế độ danh sách" aria-pressed="false"><svg class="icon"><use href="#i-list"/></svg></button>
+                            <button class="icon-button active" id="grid-view" aria-label="Chế độ lưới" aria-pressed="true" title="Chế độ lưới"><svg class="icon"><use href="#i-grid"/></svg></button>
+                            <button class="icon-button" id="list-view" aria-label="Chế độ danh sách" aria-pressed="false" title="Chế độ danh sách"><svg class="icon"><use href="#i-list"/></svg></button>
+                            <span class="toolbar-sep"></span>
+                            <button class="icon-button" id="toggle-inspector" aria-label="Xem chi tiết (I)" title="Thông tin chi tiết (Phím I)"><svg class="icon"><use href="#i-info"/></svg></button>
+                            <button class="icon-button" id="toggle-shortcuts" aria-label="Phím tắt" title="Phím tắt nhanh (?)"><svg class="icon"><use href="#i-keyboard"/></svg></button>
                         </div>
                     </div>
                 </div>
 
                 <div id="selection-bar" class="selection-bar" hidden>
-                    <label><input id="select-all" type="checkbox"> <strong id="selected-count">0 file đã chọn</strong></label>
-                    <div>
-                        <button class="text-button" id="batch-move"><svg class="icon"><use href="#i-move"/></svg>Di chuyển</button>
-                        <button class="text-button danger" id="batch-trash"><svg class="icon"><use href="#i-trash"/></svg>Thùng rác</button>
-                        <button class="text-button" id="clear-selection">Bỏ chọn</button>
+                    <div class="selection-left">
+                        <label class="check-field"><input id="select-all" type="checkbox"> <strong id="selected-count">0 file đã chọn</strong></label>
+                    </div>
+                    <div class="selection-actions" id="batch-normal-actions">
+                        <button class="action-btn" id="batch-download" title="Tải xuống tệp nén ZIP"><svg class="icon"><use href="#i-download"/></svg><span>Tải .ZIP</span></button>
+                        <button class="action-btn" id="batch-copy-url" title="Sao chép link"><svg class="icon"><use href="#i-link"/></svg><span>Sao chép link</span></button>
+                        <button class="action-btn" id="batch-move" title="Di chuyển vào thư mục khác"><svg class="icon"><use href="#i-move"/></svg><span>Di chuyển</span></button>
+                        <button class="action-btn danger" id="batch-trash" title="Chuyển vào thùng rác"><svg class="icon"><use href="#i-trash"/></svg><span>Thùng rác</span></button>
+                        <button class="action-btn secondary" id="clear-selection">Bỏ chọn</button>
+                    </div>
+                    <div class="selection-actions" id="batch-trash-actions" hidden>
+                        <button class="action-btn primary" id="batch-restore" title="Khôi phục các tệp đã chọn"><svg class="icon"><use href="#i-restore"/></svg><span>Khôi phục</span></button>
+                        <button class="action-btn danger" id="batch-purge" title="Xóa vĩnh viễn không thể khôi phục"><svg class="icon"><use href="#i-trash"/></svg><span>Xóa vĩnh viễn</span></button>
+                        <button class="action-btn secondary" id="clear-selection-trash">Bỏ chọn</button>
                     </div>
                 </div>
 
-                <div class="list-heading" id="list-heading" hidden>
-                    <span>Tên tài nguyên</span><span>Loại</span><span>Dung lượng</span><span>Ngày cập nhật</span>
-                </div>
+                <div class="library-body">
+                    <div class="library-main">
+                        <div class="list-heading" id="list-heading" hidden>
+                            <span>Tên tài nguyên</span><span>Loại</span><span>Dung lượng</span><span>Ngày cập nhật</span>
+                        </div>
 
-                <div id="content" class="file-grid" aria-live="polite" aria-busy="true"></div>
+                        <div id="content" class="file-grid" aria-live="polite" aria-busy="true"></div>
+                    </div>
+
+                    <aside id="inspector" class="inspector-drawer" hidden aria-label="Chi tiết tài nguyên">
+                        <div class="inspector-head">
+                            <strong>Chi tiết tài nguyên</strong>
+                            <button class="icon-button" id="close-inspector" aria-label="Đóng bảng chi tiết"><svg class="icon"><use href="#i-close"/></svg></button>
+                        </div>
+                        <div id="inspector-content" class="inspector-content">
+                            <div class="inspector-empty">Chọn một tài nguyên để xem thông tin chi tiết, kích thước và liên kết trực tiếp.</div>
+                        </div>
+                    </aside>
+                </div>
 
                 <div class="panel-footer">
                     <span id="result-summary">Đang tải tài nguyên…</span>

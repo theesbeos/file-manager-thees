@@ -75,8 +75,8 @@ class FileManagerController extends Controller
         $data = $request->validate([
             'parent_id' => 'nullable|integer|min:1', 'q' => 'nullable|string|max:100',
             'scope' => ['nullable', Rule::in(['all', 'shared', 'private', 'recent', 'trash'])],
-            'type' => ['nullable', Rule::in(['image', 'video', 'document', 'archive'])],
-            'sort' => ['nullable', Rule::in(['newest', 'oldest', 'name', 'size'])],
+            'type' => ['nullable', Rule::in(['image', 'video', 'audio', 'document', 'archive'])],
+            'sort' => ['nullable', Rule::in(['newest', 'oldest', 'name', 'name_desc', 'size', 'size_asc'])],
             'page' => 'nullable|integer|min:1', 'per_page' => 'nullable|integer|min:1|max:100',
         ]);
         $trash = ($data['scope'] ?? '') === 'trash';
@@ -100,9 +100,11 @@ class FileManagerController extends Controller
             match ($data['type']) {
                 'image' => $query->where('mime', 'like', 'image/%'),
                 'video' => $query->where('mime', 'like', 'video/%'),
+                'audio' => $query->where('mime', 'like', 'audio/%'),
                 'archive' => $query->where('extension', 'zip'),
                 default => $query->where('mime', 'not like', 'image/%')
                     ->where('mime', 'not like', 'video/%')
+                    ->where('mime', 'not like', 'audio/%')
                     ->where(function ($q) {
                         $q->where('extension', '!=', 'zip')->orWhereNull('extension');
                     }),
@@ -110,7 +112,15 @@ class FileManagerController extends Controller
         }
         $sort = $data['sort'] ?? 'newest';
         $query->orderByRaw("CASE WHEN kind = 'folder' THEN 0 ELSE 1 END");
-        $query->orderBy(match ($sort) { 'name' => 'name', 'size' => 'size', default => 'created_at' }, in_array($sort, ['name', 'oldest']) ? 'asc' : 'desc')->orderBy('id');
+        match ($sort) {
+            'name' => $query->orderBy('name', 'asc'),
+            'name_desc' => $query->orderBy('name', 'desc'),
+            'size' => $query->orderBy('size', 'desc'),
+            'size_asc' => $query->orderBy('size', 'asc'),
+            'oldest' => $query->orderBy('created_at', 'asc'),
+            default => $query->orderBy('created_at', 'desc'),
+        };
+        $query->orderBy('id');
 
         // Phân trang trực tiếp trên Database để tối ưu hiệu năng và RAM
         $total = $query->count();
@@ -139,8 +149,9 @@ class FileManagerController extends Controller
                 SUM(size) as total_bytes,
                 SUM(CASE WHEN mime LIKE 'image/%' THEN 1 ELSE 0 END) as count_images,
                 SUM(CASE WHEN mime LIKE 'video/%' THEN 1 ELSE 0 END) as count_videos,
+                SUM(CASE WHEN mime LIKE 'audio/%' THEN 1 ELSE 0 END) as count_audios,
                 SUM(CASE WHEN extension = 'zip' THEN 1 ELSE 0 END) as count_archives,
-                SUM(CASE WHEN mime NOT LIKE 'image/%' AND mime NOT LIKE 'video/%' AND (extension != 'zip' OR extension IS NULL) AND kind = 'file' THEN 1 ELSE 0 END) as count_documents
+                SUM(CASE WHEN mime NOT LIKE 'image/%' AND mime NOT LIKE 'video/%' AND mime NOT LIKE 'audio/%' AND (extension != 'zip' OR extension IS NULL) AND kind = 'file' THEN 1 ELSE 0 END) as count_documents
             ")
             ->first();
 
@@ -166,6 +177,7 @@ class FileManagerController extends Controller
                 'image' => (int) ($statsData->count_images ?? 0),
                 'document' => (int) ($statsData->count_documents ?? 0),
                 'video' => (int) ($statsData->count_videos ?? 0),
+                'audio' => (int) ($statsData->count_audios ?? 0),
                 'archive' => (int) ($statsData->count_archives ?? 0),
             ],
             'can_upload' => ! $trash && $this->access->allows($request->user(), 'upload', $parent),
@@ -247,6 +259,91 @@ class FileManagerController extends Controller
     {
         $this->library->purge(Node::onlyTrashed()->findOrFail($id), $request->user());
         return response()->json(['message' => 'Đã xóa vĩnh viễn.']);
+    }
+
+    public function duplicate(Request $request, int $id)
+    {
+        $node = Node::findOrFail($id);
+        $copy = $this->library->duplicate($node, $request->user());
+        return response()->json(['data' => $this->present($copy, $request), 'message' => 'Đã nhân bản tệp tin.'], 201);
+    }
+
+    public function batchMove(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer',
+            'parent_id' => 'nullable|integer|min:1',
+        ]);
+        $count = $this->library->batchMove($data['ids'], $data['parent_id'] ?? null, $request->user());
+        return response()->json(['message' => "Đã di chuyển {$count} tài nguyên."]);
+    }
+
+    public function batchTrash(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer',
+        ]);
+        $count = $this->library->batchTrash($data['ids'], $request->user());
+        return response()->json(['message' => "Đã chuyển {$count} tài nguyên vào thùng rác."]);
+    }
+
+    public function batchRestore(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer',
+        ]);
+        $count = $this->library->batchRestore($data['ids'], $request->user());
+        return response()->json(['message' => "Đã khôi phục {$count} tài nguyên."]);
+    }
+
+    public function batchPurge(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer',
+        ]);
+        $count = $this->library->batchPurge($data['ids'], $request->user());
+        return response()->json(['message' => "Đã xóa vĩnh viễn {$count} tài nguyên."]);
+    }
+
+    public function emptyTrash(Request $request)
+    {
+        $count = $this->library->emptyTrash($request->user());
+        return response()->json(['message' => "Đã dọn sạch thùng rác ({$count} tài nguyên đã xóa vĩnh viễn)."]);
+    }
+
+    public function batchDownload(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer',
+        ]);
+        $zipPath = $this->library->createZip($data['ids'], $request->user());
+        return response()->download($zipPath, 'media-bundle-'.date('YmdHis').'.zip')->deleteFileAfterSend(true);
+    }
+
+    public function details(Request $request, int $id)
+    {
+        $node = Node::withTrashed()->findOrFail($id);
+        $this->access->authorize($request->user(), 'view', $node);
+
+        $ancestors = [];
+        $current = $node->parent;
+        while ($current) {
+            array_unshift($ancestors, ['id' => $current->id, 'name' => $current->name]);
+            $current = $current->parent;
+        }
+
+        return response()->json([
+            'data' => [
+                ...$this->present($node, $request),
+                'breadcrumbs' => $ancestors,
+                'is_public' => $node->isPublic(),
+            ],
+        ]);
     }
 
     public function transform(Request $request, int $id)
