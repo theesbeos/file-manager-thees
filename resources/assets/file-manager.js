@@ -162,10 +162,18 @@
     }
     renderSelection();
     const total = result.meta.total, start = total ? (state.page - 1) * result.meta.per_page + 1 : 0;
+    if ($('result-summary')) {
+      $('result-summary').textContent = total ? `Hiển thị ${start}–${Math.min(start + state.items.length - 1, total)} trong ${total} tài nguyên` : 'Chưa có tài nguyên';
+    }
   }
   function renderPagination(meta) {
     $('pagination').innerHTML = meta.last_page > 1 ? `<div class="pagination"><button class="page-button" data-page="${meta.page - 1}" ${meta.page <= 1 ? 'disabled' : ''}>←</button><span class="page-button active">${meta.page} / ${meta.last_page}</span><button class="page-button" data-page="${meta.page + 1}" ${meta.page >= meta.last_page ? 'disabled' : ''}>→</button></div>` : '';
-    $('pagination').querySelectorAll('[data-page]').forEach((el) => el.onclick = () => {state.page = Number(el.dataset.page);load();});
+    $('pagination').querySelectorAll('[data-page]').forEach((el) => el.onclick = () => {
+      const pageNum = Number(el.dataset.page);
+      if (el.disabled || isNaN(pageNum) || pageNum < 1 || pageNum > meta.last_page) return;
+      state.page = pageNum;
+      load();
+    });
   }
   let menu;
   function closeMenu() { menu?.remove(); menu = null; }

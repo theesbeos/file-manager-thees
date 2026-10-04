@@ -21,6 +21,7 @@
 
 - 🎨 **Giao diện hiện đại & Mượt mà**: Thiết kế theo chuẩn giao diện phẳng tinh tế, hỗ trợ tùy biến màu sắc thương hiệu (Brand Color), chuyển đổi linh hoạt giữa chế độ **Lưới (Grid)** và **Danh sách (List)**.
 - ⚡ **Kéo & Thả Đa Tệp (Drag & Drop)**: Tải lên hàng loạt tệp tin cùng lúc với thanh tiến trình trực quan, tự động kiểm tra định dạng và dung lượng trước khi đẩy lên máy chủ.
+- 🚀 **Hiệu Năng Siêu Tốc & Không N+1 Query**: Phân trang trực tiếp trên Database, truy vấn thống kê gộp 1 câu SQL duy nhất (~18ms), loại bỏ hoàn toàn hiện tượng giật chớp màn hình (skeleton flash) và giữ nguyên vị trí cuộn cây thư mục.
 - 🌳 **Cây thư mục lồng nhau (Folder Tree)**: Quản lý thư mục đa cấp mượt mà, hỗ trợ tạo mới, đổi tên, di chuyển tệp tin và thư mục nhanh chóng.
 - 🖼 **Bộ công cụ xử lý ảnh tích hợp**:
   - Cắt ảnh (Crop), thay đổi kích thước (Resize), xoay ảnh.
@@ -89,13 +90,27 @@ php artisan vendor:publish --tag=file-manager-assets
 
 ### 3. Chạy Migration tạo bảng CSDL
 
-Tạo các bảng dữ liệu quản lý tệp (`file_manager_nodes`) và phân quyền (`file_manager_grants`):
+Tạo các bảng dữ liệu quản lý tệp (`fm_nodes`), phân quyền (`fm_grants`) và khóa tương tranh (`fm_locks`):
 
 ```bash
 php artisan migrate
 ```
 
-### 4. Truy cập & Trải nghiệm
+### 4. Đồng bộ các tệp tin có sẵn trên máy chủ (Tùy chọn)
+
+Nếu bạn có sẵn các tệp tin/hình ảnh trong storage (ví dụ `storage/app/public`), hãy đồng bộ toàn bộ vào cơ sở dữ liệu File Manager:
+
+```bash
+php artisan file-manager:sync
+```
+
+Hoặc chỉ định disk cụ thể và làm mới chỉ mục:
+
+```bash
+php artisan file-manager:sync --disk=public --fresh
+```
+
+### 5. Truy cập & Trải nghiệm
 
 Đăng nhập vào tài khoản người dùng trên ứng dụng của bạn và truy cập:
 👉 `https://your-domain.test/file-manager`

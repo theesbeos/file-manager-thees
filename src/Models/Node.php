@@ -20,14 +20,21 @@ class Node extends Model
 
     public function isPublic(): bool
     {
+        if (! config('file-manager.public_shared')) {
+            return false;
+        }
+
         $node = $this;
         $seen = [];
         while ($node) {
-            if (isset($seen[$node->id]) || $node->trashed() || $node->visibility !== 'shared') { return false; }
+            if (isset($seen[$node->id]) || $node->trashed() || $node->visibility !== 'shared') {
+                return false;
+            }
             $seen[$node->id] = true;
             $node = $node->parent;
         }
-        return (bool) config('file-manager.public_shared');
+
+        return true;
     }
 
     public function url(bool $thumbnail = false): string

@@ -53,7 +53,7 @@ class FileManagerController extends Controller
         ]);
     }
 
-    private function present(Node $node, Request $request): array
+    protected function present(Node $node, Request $request): array
     {
         return [
             'id' => $node->id, 'parent_id' => $node->parent_id, 'name' => $node->name,
@@ -101,7 +101,11 @@ class FileManagerController extends Controller
                 'image' => $query->where('mime', 'like', 'image/%'),
                 'video' => $query->where('mime', 'like', 'video/%'),
                 'archive' => $query->where('extension', 'zip'),
-                default => $query->where('mime', 'not like', 'image/%')->where('mime', 'not like', 'video/%')->where('extension', '!=', 'zip'),
+                default => $query->where('mime', 'not like', 'image/%')
+                    ->where('mime', 'not like', 'video/%')
+                    ->where(function ($q) {
+                        $q->where('extension', '!=', 'zip')->orWhereNull('extension');
+                    }),
             };
         }
         $sort = $data['sort'] ?? 'newest';
@@ -136,7 +140,7 @@ class FileManagerController extends Controller
                 SUM(CASE WHEN mime LIKE 'image/%' THEN 1 ELSE 0 END) as count_images,
                 SUM(CASE WHEN mime LIKE 'video/%' THEN 1 ELSE 0 END) as count_videos,
                 SUM(CASE WHEN extension = 'zip' THEN 1 ELSE 0 END) as count_archives,
-                SUM(CASE WHEN mime NOT LIKE 'image/%' AND mime NOT LIKE 'video/%' AND extension != 'zip' AND kind = 'file' THEN 1 ELSE 0 END) as count_documents
+                SUM(CASE WHEN mime NOT LIKE 'image/%' AND mime NOT LIKE 'video/%' AND (extension != 'zip' OR extension IS NULL) AND kind = 'file' THEN 1 ELSE 0 END) as count_documents
             ")
             ->first();
 
@@ -170,7 +174,10 @@ class FileManagerController extends Controller
 
     public function tree(Request $request)
     {
-        return response()->json(['data' => Node::where('kind', 'folder')->orderBy('name')->get()
+        return response()->json(['data' => Node::where('kind', 'folder')
+            ->with('parent')
+            ->orderBy('name')
+            ->get()
             ->filter(fn ($node) => $this->access->allows($request->user(), 'view', $node))
             ->map(fn ($node) => $this->present($node, $request))->values()]);
     }
@@ -303,7 +310,7 @@ class FileManagerController extends Controller
         return $this->serve($request, $node);
     }
 
-    private function serve(Request $request, Node $node)
+    protected function serve(Request $request, Node $node)
     {
         $this->library->assertActive($node);
         abort_unless($node->kind === 'file', 404);

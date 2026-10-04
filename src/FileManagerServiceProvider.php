@@ -26,5 +26,11 @@ class FileManagerServiceProvider extends ServiceProvider
         $this->publishes([__DIR__.'/../config/file-manager.php' => config_path('file-manager.php')], 'file-manager-config');
         $this->publishes([__DIR__.'/../resources/assets' => public_path('vendor/file-manager')], 'file-manager-assets');
         $this->publishes([__DIR__.'/../resources/views' => resource_path('views/vendor/file-manager')], 'file-manager-views');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \KBTech\FileManager\Commands\FileManagerSyncCommand::class,
+            ]);
+        }
     }
 }
